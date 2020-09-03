@@ -13,7 +13,7 @@ public class ThirdPersonMovement : MonoBehaviour
     public Transform cam;
 
     public float currentspeed;
-    public float speed = 6;
+    public float speed = 8;
     public float gravity = -9.81f;
     public float jumpHeight = 3;
     public Vector3 velocity;
@@ -53,12 +53,18 @@ public class ThirdPersonMovement : MonoBehaviour
 
         if (Input.GetKey(KeyCode.LeftShift) && isGrounded)
         {
-            speed = 14;
+            if(speed < 16)
+            {
+            speed = speed + 0.1f;
+            }
         }
 
         if (!Input.GetKey(KeyCode.LeftShift) && isGrounded)
         {
-            speed = 6;
+            if (speed > 8)
+            {
+                speed = speed - 0.2f;
+            }
         }
 
 
