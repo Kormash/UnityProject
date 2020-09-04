@@ -1,9 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 
 
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Security.Cryptography;
+using System.Security.Permissions;
 using System.Threading;
 using UnityEngine;
 
@@ -11,6 +14,7 @@ public class ThirdPersonMovement : MonoBehaviour
 {
     public CharacterController controller;
     public Transform cam;
+    public Rigidbody rb;
 
     public float currentspeed;
     public float speed = 8;
@@ -18,25 +22,23 @@ public class ThirdPersonMovement : MonoBehaviour
     public float jumpHeight = 3;
     public Vector3 velocity;
     public Vector3 moveDir;
-    bool isGrounded;
-
-    public Transform groundCheck;
-    public float groundDistance = 0.4f;
-    public LayerMask groundMask;
+    public bool isGrounded;
 
     float turnSmoothVelocity;
     public float turnSmoothTime = 0.1f;
 
+    void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        rb = GetComponent<Rigidbody>();
+        isGrounded = true;
+    }
 
-    // Update is called once per frame
     void Update()
     {
 
-        Cursor.lockState = CursorLockMode.Locked;
-
+        #region Jumping
         //jump
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-
         if (isGrounded && velocity.y < 0)
         {
             velocity.y = -2f;
@@ -45,11 +47,16 @@ public class ThirdPersonMovement : MonoBehaviour
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
+            isGrounded = false;
+            UnityEngine.Debug.Log("Boing");
         }
+        #endregion
+
         //gravity
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
-        //walk
+
+        #region walking
 
         if (Input.GetKey(KeyCode.LeftShift) && isGrounded)
         {
@@ -88,5 +95,19 @@ public class ThirdPersonMovement : MonoBehaviour
         {
             currentspeed = 0;
         }
+
+        #endregion
     }
+
+    void OnControllerColliderHit(ControllerColliderHit collision)
+    {
+
+        UnityEngine.Debug.Log("Collide");
+
+        if (collision.gameObject.tag == "Ground")
+        {
+            isGrounded = true;
+        }
+    }
+
 }

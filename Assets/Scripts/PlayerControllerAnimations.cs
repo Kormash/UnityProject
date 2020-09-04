@@ -9,9 +9,7 @@ public class PlayerControllerAnimations : MonoBehaviour
     //public float test;
     public float currentspeed;
     bool isGrounded;
-    public Transform groundCheck;
-    public float groundDistance = 0.4f;
-    public LayerMask groundMask;
+    GameObject go;
 
 
     void Start()
@@ -22,16 +20,30 @@ public class PlayerControllerAnimations : MonoBehaviour
     void Update()
     {
         #region currentspeed 
+
         //Copys currentspeed from ThirdPersonMovement (player).
         GameObject go = GameObject.Find("Player");
         ThirdPersonMovement sc = go.GetComponent<ThirdPersonMovement>();
         currentspeed = sc.currentspeed;
         anim.SetFloat("currentspeed", currentspeed);
+
+        #endregion
+
+        #region checkIfGrounded
+
+        //Copys Bool isGrounded from ThirdPersonMovement (player).
+        isGrounded = sc.isGrounded;
+        anim.SetBool("isGrounded", isGrounded);
+
         #endregion
 
 
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            anim.Play("BasicMotions@JumpStart01");
+        }
 
+        anim.SetBool("isGrounded", isGrounded);
 
     }
 }
