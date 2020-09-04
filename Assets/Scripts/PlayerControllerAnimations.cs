@@ -6,7 +6,6 @@ public class PlayerControllerAnimations : MonoBehaviour
 {
     Animator anim;
 
-    //public float test;
     public float currentspeed;
     bool isGrounded;
     GameObject go;
@@ -44,6 +43,5 @@ public class PlayerControllerAnimations : MonoBehaviour
         }
 
         anim.SetBool("isGrounded", isGrounded);
-
     }
 }

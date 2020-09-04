@@ -30,8 +30,7 @@ public class ThirdPersonMovement : MonoBehaviour
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
-        rb = GetComponent<Rigidbody>();
-        isGrounded = true;
+        isGrounded = false;
     }
 
     void Update()
@@ -48,7 +47,6 @@ public class ThirdPersonMovement : MonoBehaviour
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
             isGrounded = false;
-            UnityEngine.Debug.Log("Boing");
         }
         #endregion
 
@@ -99,14 +97,19 @@ public class ThirdPersonMovement : MonoBehaviour
         #endregion
     }
 
-    void OnControllerColliderHit(ControllerColliderHit collision)
-    {
-
-        UnityEngine.Debug.Log("Collide");
-
-        if (collision.gameObject.tag == "Ground")
+    void OnCollisionEnter(UnityEngine.Collision collision)
+    {        
+        if (collision.collider.CompareTag("Ground"))
         {
             isGrounded = true;
+        }
+    }
+
+    void OnCollisionExit(UnityEngine.Collision collision)
+    {
+        if (collision.collider.CompareTag("Ground"))
+        {
+            isGrounded = false;
         }
     }
 
