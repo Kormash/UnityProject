@@ -16,9 +16,14 @@ public class ThirdPersonMovement : MonoBehaviour
     public Transform cam;
     public Rigidbody rb;
 
+    [Header("Movement Stats")]
+    [SerializeField]
     public float currentspeed;
+    [SerializeField]
     public float speed = 8;
+    [SerializeField]
     public float gravity = -9.81f;
+    [SerializeField]
     public float jumpHeight = 3;
     public Vector3 velocity;
     public Vector3 moveDir;
