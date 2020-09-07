@@ -74,6 +74,10 @@ public class ThirdPersonMovement : MonoBehaviour
             {
                 speed = speed - 0.2f;
             }
+            else
+            {
+                speed = speed +0.2f;
+            }
         }
 
 
@@ -100,18 +104,7 @@ public class ThirdPersonMovement : MonoBehaviour
 
         #endregion
     }
-
-    /*   
-    void OnCollisionEnter(UnityEngine.Collision collision)
-    {        
-        if (collision.collider.CompareTag("Ground"))
-        {
-            isGrounded = true;
-        }
-    }
-    */
-    
-
+  
     void OnCollisionExit(UnityEngine.Collision collision)
     {
         if (collision.collider.CompareTag("Ground"))
