@@ -7,6 +7,7 @@ public class PlayerControllerAnimations : MonoBehaviour
     Animator anim;
 
     public float currentspeed;
+    public float fallingspeed;
     bool isGrounded;
     GameObject go;
 
@@ -18,13 +19,17 @@ public class PlayerControllerAnimations : MonoBehaviour
 
     void Update()
     {
+
+
         #region currentspeed 
 
         //Copys currentspeed from ThirdPersonMovement (player).
         GameObject go = GameObject.Find("Player");
         ThirdPersonMovement sc = go.GetComponent<ThirdPersonMovement>();
+        fallingspeed = sc.velocity.y;
         currentspeed = sc.currentspeed;
         anim.SetFloat("currentspeed", currentspeed);
+        anim.SetFloat("fallingspeed", fallingspeed);
 
         #endregion
 

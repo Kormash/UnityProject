@@ -45,7 +45,7 @@ public class ThirdPersonMovement : MonoBehaviour
         //jump
         if (isGrounded && velocity.y < 0)
         {
-            velocity.y = -2f;
+            velocity.y = -10f;
         }
 
         if (Input.GetButtonDown("Jump") && isGrounded)
@@ -64,7 +64,7 @@ public class ThirdPersonMovement : MonoBehaviour
         {
             if(speed < 16)
             {
-            speed = speed + 0.1f;
+                speed = speed + 0.1f;
             }
         }
 
@@ -101,23 +101,43 @@ public class ThirdPersonMovement : MonoBehaviour
         #endregion
     }
 
+    /*   
     void OnCollisionEnter(UnityEngine.Collision collision)
     {        
-        if (collision.collider.CompareTag("ignoreGroundCheck"))
-        {
-            isGrounded = false;
-        }
-        else
+        if (collision.collider.CompareTag("Ground"))
         {
             isGrounded = true;
         }
     }
+    */
+    
 
     void OnCollisionExit(UnityEngine.Collision collision)
     {
         if (collision.collider.CompareTag("Ground"))
         {
             isGrounded = false;
+        }
+    }
+    
+
+    void OnCollisionStay(UnityEngine.Collision collision)
+    {
+        if (collision.collider.CompareTag("Ground"))
+        {
+            isGrounded = true;
+        }
+    }
+
+    void OnTriggerStay(Collider collision)
+    {
+        if (collision.GetComponent<Collider>().CompareTag("Ground"))
+        {
+            //Player is touching a Wall.
+            if(!isGrounded && speed > 0.5)
+            {
+                speed = speed - 0.1f;
+            }
         }
     }
 
