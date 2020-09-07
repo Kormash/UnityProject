@@ -51,7 +51,6 @@ public class ThirdPersonMovement : MonoBehaviour
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
-            isGrounded = false;
         }
         #endregion
 
@@ -104,7 +103,11 @@ public class ThirdPersonMovement : MonoBehaviour
 
     void OnCollisionEnter(UnityEngine.Collision collision)
     {        
-        if (collision.collider.CompareTag("Ground"))
+        if (collision.collider.CompareTag("ignoreGroundCheck"))
+        {
+            isGrounded = false;
+        }
+        else
         {
             isGrounded = true;
         }
