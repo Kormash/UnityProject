@@ -15,6 +15,7 @@ public class ThirdPersonMovement : MonoBehaviour
     public CharacterController controller;
     public Transform cam;
     public Rigidbody rb;
+    public bool isHooked;
 
     [Header("Movement Stats")]
     [SerializeField]
@@ -41,26 +42,35 @@ public class ThirdPersonMovement : MonoBehaviour
     void Update()
     {
 
+        //isHooked
+        GameObject go = GameObject.Find("Player");
+        GrapplingHook sc = go.GetComponent<GrapplingHook>();
+        isHooked = sc.isHooked;
+
         #region Jumping
         //jump
-        if (isGrounded && velocity.y < 0)
+        if (isGrounded && velocity.y < 0 && !isHooked)
         {
             velocity.y = -10f;
         }
 
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (Input.GetButtonDown("Jump") && isGrounded && !isHooked)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
         }
         #endregion
 
-        //gravity
+        #region gravity
+        if(!isHooked)
+        {
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
+        }
+        #endregion
 
         #region walking
 
-        if (Input.GetKey(KeyCode.LeftShift) && isGrounded)
+        if (Input.GetKey(KeyCode.LeftShift) && isGrounded && !isHooked)
         {
             if(speed < 16)
             {
@@ -68,7 +78,7 @@ public class ThirdPersonMovement : MonoBehaviour
             }
         }
 
-        if (!Input.GetKey(KeyCode.LeftShift) && isGrounded)
+        if (!Input.GetKey(KeyCode.LeftShift) && isGrounded && !isHooked)
         {
             if (speed > 8)
             {
@@ -85,7 +95,7 @@ public class ThirdPersonMovement : MonoBehaviour
         float vertical = Input.GetAxisRaw("Vertical");
         Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
 
-        if (direction.magnitude >= 0.1f)
+        if (direction.magnitude >= 0.1f && !isHooked)
         {
 
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
