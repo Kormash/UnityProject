@@ -15,7 +15,6 @@ public class ThirdPersonMovement : MonoBehaviour
     public CharacterController controller;
     public Transform cam;
     public Rigidbody rb;
-    public bool isHooked;
 
     [Header("Movement Stats")]
     [SerializeField]
@@ -29,9 +28,17 @@ public class ThirdPersonMovement : MonoBehaviour
     public Vector3 velocity;
     public Vector3 moveDir;
     public bool isGrounded;
-
     float turnSmoothVelocity;
     public float turnSmoothTime = 0.1f;
+
+    [Header("Hook Stats")]
+    [SerializeField]
+    public bool isHooked;
+    [SerializeField]
+    public Vector3 hookPosition;
+    [SerializeField]
+    public float grappleSpeed = 1f;
+    public Vector3 playerToHook;
 
     void Start()
     {
@@ -42,10 +49,27 @@ public class ThirdPersonMovement : MonoBehaviour
     void Update()
     {
 
-        //isHooked
+        #region check if isHooked
         GameObject go = GameObject.Find("Player");
         GrapplingHook sc = go.GetComponent<GrapplingHook>();
         isHooked = sc.isHooked;
+        hookPosition = sc.hookPosition;
+
+        if (isHooked)
+        {
+
+            Vector3 playerPosition = new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z);
+            playerToHook = (hookPosition - playerPosition);
+
+            if (playerToHook.magnitude > 2)
+            {
+                controller.Move(playerToHook.normalized * Time.deltaTime * grappleSpeed * 1000);
+            }
+
+        }
+
+
+        #endregion
 
         #region Jumping
         //jump
@@ -61,11 +85,12 @@ public class ThirdPersonMovement : MonoBehaviour
         #endregion
 
         #region gravity
-        if(!isHooked)
-        {
+
         velocity.y += gravity * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime);
-        }
+            if (!isHooked)
+            {
+                controller.Move(velocity * Time.deltaTime);
+            }
         #endregion
 
         #region walking
@@ -95,15 +120,18 @@ public class ThirdPersonMovement : MonoBehaviour
         float vertical = Input.GetAxisRaw("Vertical");
         Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
 
-        if (direction.magnitude >= 0.1f && !isHooked)
+        if (direction.magnitude >= 0.1f)
         {
 
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
-            moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            controller.Move(moveDir.normalized * speed * Time.deltaTime);
+            if (!isHooked)
+            {
+                moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+                controller.Move(moveDir.normalized * speed * Time.deltaTime);
+            }
 
             currentspeed = speed;
         }
@@ -114,7 +142,8 @@ public class ThirdPersonMovement : MonoBehaviour
 
         #endregion
     }
-  
+
+    #region isGrounded / touching wall
     void OnCollisionExit(UnityEngine.Collision collision)
     {
         if (collision.collider.CompareTag("Ground"))
@@ -143,5 +172,5 @@ public class ThirdPersonMovement : MonoBehaviour
             }
         }
     }
-
+    #endregion
 }

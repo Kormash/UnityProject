@@ -13,14 +13,29 @@ public class GrapplingHook : MonoBehaviour
     public bool isHooked = false;
     public Vector3 hookPosition;
     public Vector3 playerToHook;
+    public Vector3 playerPosition;
+    Vector3 playerPosForDrawRope;
+    public LineRenderer lr;
 
     [Header("Grappling Hook Stats")]
     [SerializeField]
     public float HookSpeed;
 
+    void Start()
+    {
+        lr = GetComponent<LineRenderer>();
+    }
 
     void Update()
     {
+        if (isHooked)
+        {
+            DrawRope();
+        }
+        else
+        {
+            RemoveRope();
+        }
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
@@ -33,41 +48,35 @@ public class GrapplingHook : MonoBehaviour
                 isHooked = false;
             }
         }
-        if (isHooked)
-        {
-            
-            UnityEngine.Debug.Log("isHooked true and working");
-            Vector3 playerPosition = new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z);
-            playerToHook = (hookPosition - playerPosition);
-
-            //if(playerToHook.magnitude > 5) - kommentard ut, minimum distance så player inte hamnar i väggen.
-
-            Player.GetComponent<Rigidbody>().AddForce(playerToHook * HookSpeed, ForceMode.Impulse);
-
-        }
     }
 
     public void GrapplingHookHandler()
     {
-        Vector3 playerPosition = new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z);
+        playerPosition = new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z);
         UnityEngine.Debug.DrawRay(playerPosition, cam.transform.forward * 100, Color.red, 2f);
         Ray ray = new Ray(playerPosition, cam.transform.forward);
 
         RaycastHit hit;
-        if(Physics.Raycast (ray, out hit))
+        if (Physics.Raycast(ray, out hit))
         {
             hookPosition = hit.point;
             isHooked = true;
         }
+    }
 
+    void DrawRope()
+    {
+        playerPosForDrawRope = new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z);
+        lr = GetComponent<LineRenderer>();
+        lr.SetPosition(0, playerPosForDrawRope);
+        lr.SetPosition(1, hookPosition);
+    }
 
-
-        /*GameObject clone;
-        clone = Instantiate(bullet, playerPosition, Quaternion.identity);
-        clone.GetComponent<Rigidbody>().AddForce(cam.transform.forward * HookSpeed, ForceMode.Impulse);
-        Destroy(clone, 3);*/
-
-
-
+    void RemoveRope()
+    {
+        Vector3 normal = new Vector3(0f, 0f, 0f);
+        lr = GetComponent<LineRenderer>();
+        lr.SetPosition(0, normal);
+        lr.SetPosition(1, normal);
     }
 }
