@@ -28,6 +28,7 @@ public class ThirdPersonMovement : MonoBehaviour
     public Vector3 velocity;
     public Vector3 moveDir;
     public bool isGrounded;
+    public bool hasMomentum;
     float turnSmoothVelocity;
     public float turnSmoothTime = 0.1f;
 
@@ -44,6 +45,7 @@ public class ThirdPersonMovement : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         isGrounded = false;
+        hasMomentum = false;
     }
 
     void Update()
@@ -57,17 +59,26 @@ public class ThirdPersonMovement : MonoBehaviour
 
         if (isHooked)
         {
+            hasMomentum = true;
 
             Vector3 playerPosition = new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z);
             playerToHook = (hookPosition - playerPosition);
 
             if (playerToHook.magnitude > 2)
             {
-                controller.Move(playerToHook.normalized * Time.deltaTime * grappleSpeed * 1000);
+                controller.Move(playerToHook.normalized * Time.deltaTime * grappleSpeed * 600);
             }
 
+        }else if (isGrounded)
+        {
+            hasMomentum = false;
         }
 
+        if (hasMomentum && !isHooked)
+        {
+            controller.Move(playerToHook.normalized * Time.deltaTime * grappleSpeed * 400);
+            speed = 40;
+        }
 
         #endregion
 
@@ -86,11 +97,11 @@ public class ThirdPersonMovement : MonoBehaviour
 
         #region gravity
 
-        velocity.y += gravity * Time.deltaTime;
-            if (!isHooked)
-            {
-                controller.Move(velocity * Time.deltaTime);
-            }
+        if (!isHooked)
+        {
+            velocity.y += gravity * Time.deltaTime;
+            controller.Move(velocity * Time.deltaTime);
+        }
         #endregion
 
         #region walking
@@ -100,6 +111,10 @@ public class ThirdPersonMovement : MonoBehaviour
             if(speed < 16)
             {
                 speed = speed + 0.1f;
+            }
+            else
+            {
+                speed = speed - 0.2f;
             }
         }
 
